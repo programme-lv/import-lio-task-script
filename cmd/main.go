@@ -23,6 +23,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Check if the source format is "lio2024"
+	if *sourceFormat != "lio2024" {
+		fmt.Println("Unsupported source format. Only 'lio2024' is supported.")
+		os.Exit(1)
+	}
+
 	// Get the base name of the source directory
 	baseName := filepath.Base(*sourceDir)
 	newDirName := baseName + "_proglv"
