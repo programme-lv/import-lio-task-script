@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"gopkg.in/yaml.v2"
 )
 
 // Unzip extracts a zip archive to a specified destination.
@@ -56,17 +58,17 @@ func Unzip(src, dest string) error {
 
 // TaskYAML represents the structure of the task.yaml file.
 type TaskYAML struct {
-	Name         string `yaml:"name"`
-	Title        string `yaml:"title"`
-	TimeLimit    float64 `yaml:"time_limit"`
-	MemoryLimit  int `yaml:"memory_limit"`
-	SubtaskPoints []int `yaml:"subtask_points"`
-	TestsGroups  []struct {
+	Name          string  `yaml:"name"`
+	Title         string  `yaml:"title"`
+	TimeLimit     float64 `yaml:"time_limit"`
+	MemoryLimit   int     `yaml:"memory_limit"`
+	SubtaskPoints []int   `yaml:"subtask_points"`
+	TestsGroups   []struct {
 		Groups  interface{} `yaml:"groups"`
-		Points  int `yaml:"points"`
+		Points  int         `yaml:"points"`
 		Public  interface{} `yaml:"public"`
-		Subtask int `yaml:"subtask"`
-		Comment string `yaml:"comment,omitempty"`
+		Subtask int         `yaml:"subtask"`
+		Comment string      `yaml:"comment,omitempty"`
 	} `yaml:"tests_groups"`
 }
 
@@ -86,6 +88,7 @@ func ReadTaskYAML(filePath string) (*TaskYAML, error) {
 	}
 
 	return &task, nil
+}
 
 // CopyPDF moves PDF files from the source to the destination.
 func CopyPDF(srcDir, destPath string) error {

@@ -7,8 +7,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/programme-lv/fs-task-problem-toml/pkg/ptoml"
+	"github.com/pelletier/go-toml/v2"
 	"github.com/programme-lv/import-lio-task-script/internal"
+
+	"github.com/programme-lv/fs-task-problem-toml/pkg/ptoml"
 )
 
 func main() {
@@ -57,7 +59,6 @@ func main() {
 	// Move PDF files
 	pdfSourceDir := filepath.Join(*sourceDir, "teksts")
 	pdfStatementDir := filepath.Join(newDirPath, "statements", "pdf")
-	// create the destination directory
 	pdfDestPath := filepath.Join(pdfStatementDir, "lv.pdf")
 	err = internal.CopyPDF(pdfSourceDir, pdfDestPath)
 	if err != nil {
@@ -65,10 +66,15 @@ func main() {
 	}
 
 	// Read source task.yaml file
+	taskYAMLPath := filepath.Join(*sourceDir, "task.yaml")
+	task, err := internal.ReadTaskYAML(taskYAMLPath)
+	if err != nil {
+		log.Fatalf("Failed to read task.yaml: %v\n", err)
+	}
 
 	// Write problem.toml file
 	problemToml := ptoml.ProblemTOMLV2dot1{
-		TaskName: "",
+		TaskName: task.Title,
 		Metadata: ptoml.ProblemTOMLV2dot0Metadata{
 			ProblemTags:        []string{},
 			DifficultyFrom1To5: 0,
@@ -76,16 +82,113 @@ func main() {
 			OriginOlympiad:     new(string),
 		},
 		Constraints: ptoml.ProblemTOMLV2dot0Constraints{
-			MemoryMegabytes: 0,
-			CPUTimeSeconds:  0,
+			MemoryMegabytes: task.MemoryLimit,
+			CPUTimeSeconds:  task.TimeLimit,
 		},
-		TestGroups: &[]ptoml.ProblemTOMLV2dot1LIOTestGroup{
-			ptoml.ProblemTOMLV2dot1LIOTestGroup{
-				Points:     0,
-				Subtask:    0,
-				Public:     false,
-				TestFnames: []string{},
-			},
-		},
+		TestGroups: []ptoml.ProblemTOMLV2dot1LIOTestGroup{},
 	}
+
+	// Read all filenames in the tests directory
+	mapGroupToTestFilenames := map[int][]string{}
+	testsDir := filepath.Join(newDirPath, "tests")
+	files, err := os.ReadDir(testsDir)
+	if err != nil {
+		log.Fatalf("Failed to read directory %s: %v\n", testsDir, err)
+	}
+	for _, file := range files {
+		if file.IsDir() {
+			log.Fatalf("Unexpected directory in the tests directory: %s\n", file.Name())
+		}
+		// fname := file.Name()
+		// log.Println(fname)
+	}
+
+	for _, group := range task.TestsGroups {
+		groups := []int{}
+
+		switch v := group.Groups.(type) {
+		case int:
+			groups = append(groups, v)
+		case []interface{}:
+			integers := []int{}
+			for _, vv := range v {
+				switch vv := vv.(type) {
+				case int:
+					integers = append(integers, vv)
+				default:
+					log.Fatalf("Unsupported group: %+v %T\n", vv, vv)
+				}
+			}
+			if len(integers) == 1 {
+				groups = append(groups, integers...)
+			} else if len(v) == 2 {
+				for i := integers[0]; i <= integers[1]; i++ {
+					groups = append(groups, i)
+				}
+			} else {
+				log.Fatalf("Unsupported groups length: %v\n", v)
+			}
+		default:
+			log.Fatalf("Unsupported groups: %+v %T\n", v, v)
+		}
+
+		publicGroups := []int{}
+		switch v := group.Public.(type) {
+		case bool:
+			if v {
+				publicGroups = append(publicGroups, groups...)
+			}
+		case []interface{}:
+			integers := []int{}
+			for _, vv := range v {
+				switch vv := vv.(type) {
+				case int:
+					integers = append(integers, vv)
+				default:
+					log.Fatalf("Unsupported public group: %+v %T\n", vv, vv)
+				}
+			}
+
+			if len(integers) == 1 {
+				publicGroups = append(publicGroups, integers...)
+			} else if len(integers) == 2 {
+				for i := integers[0]; i <= integers[1]; i++ {
+					publicGroups = append(publicGroups, i)
+				}
+			} else {
+				log.Fatalf("Unsupported public groups: %v\n", v)
+			}
+		default:
+			log.Fatalf("Unsupported public groups: %v\n", v)
+		}
+
+		for _, g := range groups {
+			isPublic := false
+			for _, pg := range publicGroups {
+				if g == pg {
+					isPublic = true
+					break
+				}
+			}
+			problemToml.TestGroups = append(problemToml.TestGroups, ptoml.ProblemTOMLV2dot1LIOTestGroup{
+				Points:     group.Points,
+				Subtask:    group.Subtask,
+				Public:     isPublic,
+				TestFnames: mapGroupToTestFilenames[g],
+			})
+		}
+	}
+
+	err = toml.NewEncoder(os.Stdout).SetTablesInline(false).SetArraysMultiline(true).SetIndentTables(true).Encode(problemToml)
+	// res, err := toml.Marshal(problemToml)
+	if err != nil {
+		log.Fatalf("Failed to marshal the problem.toml: %v\n", err)
+	}
+
+	// problemTomlPath := filepath.Join(newDirPath, "problem.toml")
+	// err = os.WriteFile(problemTomlPath, res, 0644)
+	// if err != nil {
+	// 	log.Fatalf("Failed to write problem.toml: %v\n", err)
+	// }
+
 }
