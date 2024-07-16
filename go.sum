@@ -5,10 +5,6 @@ github.com/pelletier/go-toml/v2 v2.2.2 h1:aYUidT7k73Pcl9nb2gScu7NSrKCSHIDE89b3+6
 github.com/pelletier/go-toml/v2 v2.2.2/go.mod h1:1t835xjRzz80PqgE6HHgN2JOsmgYu/h4qDAS4n929Rs=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/programme-lv/fs-task-problem-toml v0.0.0-20240716165531-b84c28009e86 h1:tW0F85XY8EarL9+uOmY0IpCd3WSVY60n+zmy87wb/xQ=
-github.com/programme-lv/fs-task-problem-toml v0.0.0-20240716165531-b84c28009e86/go.mod h1:pVkwhxftn6Cf4dJ2/F4ke6lngvXKYjqL8i7M+xDsv0w=
-github.com/programme-lv/fs-task-problem-toml v0.0.0-20240716173431-4b2227156f24 h1:Y4Y2xoG3r+jTT/s7pWEthk1tv1AZJbG/rPunrDeygAA=
-github.com/programme-lv/fs-task-problem-toml v0.0.0-20240716173431-4b2227156f24/go.mod h1:pVkwhxftn6Cf4dJ2/F4ke6lngvXKYjqL8i7M+xDsv0w=
 github.com/programme-lv/fs-task-problem-toml v0.0.0-20240716175237-7b26493e31e8 h1:R3Wl/Zb1jrb7X7wFD6wOQWC4PaIlO2ehaM2R/lGpQ4c=
 github.com/programme-lv/fs-task-problem-toml v0.0.0-20240716175237-7b26493e31e8/go.mod h1:pVkwhxftn6Cf4dJ2/F4ke6lngvXKYjqL8i7M+xDsv0w=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
