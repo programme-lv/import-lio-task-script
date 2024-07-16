@@ -3,9 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
-	"log"
+
+	"github.com/programme-lv/fs-task-problem-toml/pkg/ptoml"
+	"github.com/programme-lv/import-lio-task-script/internal"
 )
 
 func main() {
@@ -46,16 +49,43 @@ func main() {
 
 	// Unzip tests.zip
 	zipPath := filepath.Join(*sourceDir, "testi", "tests.zip")
-	err = Unzip(zipPath, newDirPath)
+	err = internal.Unzip(zipPath, filepath.Join(newDirPath, "tests"))
 	if err != nil {
 		log.Fatalf("Failed to unzip %s: %v\n", zipPath, err)
 	}
 
 	// Move PDF files
 	pdfSourceDir := filepath.Join(*sourceDir, "teksts")
-	pdfDestPath := filepath.Join(newDirPath, "statements", "pdf", "lv.pdf")
-	err = MovePDF(pdfSourceDir, pdfDestPath)
+	pdfStatementDir := filepath.Join(newDirPath, "statements", "pdf")
+	// create the destination directory
+	pdfDestPath := filepath.Join(pdfStatementDir, "lv.pdf")
+	err = internal.CopyPDF(pdfSourceDir, pdfDestPath)
 	if err != nil {
 		log.Fatalf("Failed to move PDF files: %v\n", err)
+	}
+
+	// Read source task.yaml file
+
+	// Write problem.toml file
+	problemToml := ptoml.ProblemTOMLV2dot1{
+		TaskName: "",
+		Metadata: ptoml.ProblemTOMLV2dot0Metadata{
+			ProblemTags:        []string{},
+			DifficultyFrom1To5: 0,
+			TaskAuthors:        []string{},
+			OriginOlympiad:     new(string),
+		},
+		Constraints: ptoml.ProblemTOMLV2dot0Constraints{
+			MemoryMegabytes: 0,
+			CPUTimeSeconds:  0,
+		},
+		TestGroups: &[]ptoml.ProblemTOMLV2dot1LIOTestGroup{
+			ptoml.ProblemTOMLV2dot1LIOTestGroup{
+				Points:     0,
+				Subtask:    0,
+				Public:     false,
+				TestFnames: []string{},
+			},
+		},
 	}
 }
