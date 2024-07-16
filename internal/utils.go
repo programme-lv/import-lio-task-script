@@ -54,6 +54,39 @@ func Unzip(src, dest string) error {
 	return nil
 }
 
+// TaskYAML represents the structure of the task.yaml file.
+type TaskYAML struct {
+	Name         string `yaml:"name"`
+	Title        string `yaml:"title"`
+	TimeLimit    float64 `yaml:"time_limit"`
+	MemoryLimit  int `yaml:"memory_limit"`
+	SubtaskPoints []int `yaml:"subtask_points"`
+	TestsGroups  []struct {
+		Groups  interface{} `yaml:"groups"`
+		Points  int `yaml:"points"`
+		Public  interface{} `yaml:"public"`
+		Subtask int `yaml:"subtask"`
+		Comment string `yaml:"comment,omitempty"`
+	} `yaml:"tests_groups"`
+}
+
+// ReadTaskYAML reads and parses the task.yaml file.
+func ReadTaskYAML(filePath string) (*TaskYAML, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	var task TaskYAML
+	decoder := yaml.NewDecoder(file)
+	err = decoder.Decode(&task)
+	if err != nil {
+		return nil, err
+	}
+
+	return &task, nil
+
 // CopyPDF moves PDF files from the source to the destination.
 func CopyPDF(srcDir, destPath string) error {
 	err := os.MkdirAll(filepath.Dir(destPath), os.ModePerm)
