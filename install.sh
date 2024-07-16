@@ -14,7 +14,7 @@ fi
 go get github.com/pelletier/go-toml/v2
 
 # Build the Go script
-go build -o "$SCRIPT_NAME" ./cmd
+go build -o "$SCRIPT_NAME" ./cmd/main.go
 
 # Install the built script to /usr/local/bin
 sudo mv "$SCRIPT_NAME" "$INSTALL_DIR"
