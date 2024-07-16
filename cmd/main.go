@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"log"
 )
 
 func main() {
@@ -42,4 +43,19 @@ func main() {
 	}
 
 	fmt.Printf("New directory created at %s\n", newDirPath)
+
+	// Unzip tests.zip
+	zipPath := filepath.Join(*sourceDir, "testi", "tests.zip")
+	err = Unzip(zipPath, newDirPath)
+	if err != nil {
+		log.Fatalf("Failed to unzip %s: %v\n", zipPath, err)
+	}
+
+	// Move PDF files
+	pdfSourceDir := filepath.Join(*sourceDir, "teksts")
+	pdfDestPath := filepath.Join(newDirPath, "statements", "pdf", "lv.pdf")
+	err = MovePDF(pdfSourceDir, pdfDestPath)
+	if err != nil {
+		log.Fatalf("Failed to move PDF files: %v\n", err)
+	}
 }
