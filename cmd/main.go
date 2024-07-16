@@ -6,6 +6,9 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strconv"
+	"strings"
 
 	"github.com/pelletier/go-toml/v2"
 	"github.com/programme-lv/import-lio-task-script/internal"
@@ -99,8 +102,28 @@ func main() {
 		if file.IsDir() {
 			log.Fatalf("Unexpected directory in the tests directory: %s\n", file.Name())
 		}
-		// fname := file.Name()
-		// log.Println(fname)
+		fname := file.Name()
+		log.Println(fname)
+		// split into part by dot. keep the last part (the extension)
+		parts := strings.Split(fname, ".")
+		if len(parts) < 2 {
+			log.Fatalf("Unexpected filename: %s\n", fname)
+		}
+
+		ext := parts[len(parts)-1]
+
+		re := regexp.MustCompile("[0-9]+")
+		dGroups := re.FindAllString(ext, -1)
+		if len(dGroups) != 1 {
+			log.Fatalf("Unexpected filename: %s\n", fname)
+		}
+
+		group, err := strconv.Atoi(dGroups[0])
+		if err != nil {
+			log.Fatalf("Failed to convert %s to int: %v\n", dGroups[0], err)
+		}
+
+		mapGroupToTestFilenames[group] = append(mapGroupToTestFilenames[group], fname)
 	}
 
 	for _, group := range task.TestsGroups {
