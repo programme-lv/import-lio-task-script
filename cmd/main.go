@@ -75,6 +75,8 @@ func main() {
 		log.Fatalf("Failed to read task.yaml: %v\n", err)
 	}
 
+	olympiad := "LIO"
+
 	// Write problem.toml file
 	problemToml := ptoml.ProblemTOMLV2dot1{
 		TaskName: task.Title,
@@ -82,7 +84,7 @@ func main() {
 			ProblemTags:        []string{},
 			DifficultyFrom1To5: 0,
 			TaskAuthors:        []string{},
-			OriginOlympiad:     new(string),
+			OriginOlympiad:     &olympiad,
 		},
 		Constraints: ptoml.ProblemTOMLV2dot0Constraints{
 			MemoryMegabytes: task.MemoryLimit,
@@ -103,7 +105,6 @@ func main() {
 			log.Fatalf("Unexpected directory in the tests directory: %s\n", file.Name())
 		}
 		fname := file.Name()
-		log.Println(fname)
 		// split into part by dot. keep the last part (the extension)
 		parts := strings.Split(fname, ".")
 		if len(parts) < 2 {
@@ -121,6 +122,28 @@ func main() {
 		group, err := strconv.Atoi(dGroups[0])
 		if err != nil {
 			log.Fatalf("Failed to convert %s to int: %v\n", dGroups[0], err)
+		}
+
+		// rename the file. if it has ".i" in the name, append "in" to the end
+		// if it has ".o" in the name, append "out" to the end
+		// remove ".i" and ".o" from the name
+
+		if strings.Contains(fname, ".i") {
+			newFname := strings.ReplaceAll(fname, ".i", "")
+			newFname += ".in"
+			err := os.Rename(filepath.Join(testsDir, fname), filepath.Join(testsDir, newFname))
+			if err != nil {
+				log.Fatalf("Failed to rename %s to %s: %v\n", fname, newFname, err)
+			}
+			fname = newFname
+		} else if strings.Contains(fname, ".o") {
+			newFname := strings.ReplaceAll(fname, ".o", "")
+			newFname += ".out"
+			err := os.Rename(filepath.Join(testsDir, fname), filepath.Join(testsDir, newFname))
+			if err != nil {
+				log.Fatalf("Failed to rename %s to %s: %v\n", fname, newFname, err)
+			}
+			fname = newFname
 		}
 
 		mapGroupToTestFilenames[group] = append(mapGroupToTestFilenames[group], fname)
@@ -186,6 +209,41 @@ func main() {
 		}
 
 		for _, g := range groups {
+			// move g 0 files to examples
+			if g == 0 {
+				for _, f := range mapGroupToTestFilenames[g] {
+					err := os.MkdirAll(filepath.Join(newDirPath, "examples"), 0755)
+					if err != nil {
+						log.Fatalf("Failed to create examples directory: %v\n", err)
+					}
+					err = os.Rename(filepath.Join(testsDir, f), filepath.Join(newDirPath, "examples", f))
+					if err != nil {
+						log.Fatalf("Failed to move %s to examples: %v\n", f, err)
+					}
+				}
+				continue
+			}
+			// copy g 1 INPUT files to examples (outputs are hidden)
+			// if g == 1 {
+			// 	for _, f := range mapGroupToTestFilenames[g] {
+			// 		if strings.Contains(f, ".o") {
+			// 			continue
+			// 		}
+			// 		err := os.MkdirAll(filepath.Join(newDirPath, "examples"), 0755)
+			// 		if err != nil {
+			// 			log.Fatalf("Failed to create examples directory: %v\n", err)
+			// 		}
+			// 		content, err := os.ReadFile(filepath.Join(testsDir, f))
+			// 		if err != nil {
+			// 			log.Fatalf("Failed to read %s: %v\n", f, err)
+			// 		}
+			// 		err = os.WriteFile(filepath.Join(newDirPath, "examples", f), content, 0644)
+			// 		if err != nil {
+			// 			log.Fatalf("Failed to copy %s to examples: %v\n", f, err)
+			// 		}
+			// 	}
+			// }
+
 			isPublic := false
 			for _, pg := range publicGroups {
 				if g == pg {
@@ -194,6 +252,7 @@ func main() {
 				}
 			}
 			problemToml.TestGroups = append(problemToml.TestGroups, ptoml.ProblemTOMLV2dot1LIOTestGroup{
+				GroupID:    g,
 				Points:     group.Points,
 				Subtask:    group.Subtask,
 				Public:     isPublic,
@@ -202,16 +261,16 @@ func main() {
 		}
 	}
 
-	err = toml.NewEncoder(os.Stdout).SetTablesInline(false).SetArraysMultiline(true).SetIndentTables(true).Encode(problemToml)
-	// res, err := toml.Marshal(problemToml)
+	f, err := os.OpenFile(filepath.Join(newDirPath, "problem.toml"), os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatalf("Failed to open problem.toml: %v\n", err)
+	}
+	defer f.Close()
+
+	err = toml.NewEncoder(f).SetTablesInline(false).SetArraysMultiline(true).SetIndentTables(true).Encode(problemToml)
 	if err != nil {
 		log.Fatalf("Failed to marshal the problem.toml: %v\n", err)
 	}
 
-	// problemTomlPath := filepath.Join(newDirPath, "problem.toml")
-	// err = os.WriteFile(problemTomlPath, res, 0644)
-	// if err != nil {
-	// 	log.Fatalf("Failed to write problem.toml: %v\n", err)
-	// }
-
+	log.Println("All done!")
 }
