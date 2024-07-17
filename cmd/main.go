@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/pelletier/go-toml/v2"
 	"github.com/programme-lv/import-lio-task-script/internal"
 
 	"github.com/programme-lv/fs-task-problem-toml/pkg/ptoml"
@@ -78,19 +77,12 @@ func main() {
 	olympiad := "LIO"
 
 	// Write problem.toml file
-	problemToml := ptoml.ProblemTOMLV2dot1{
-		TaskName: task.Title,
-		Metadata: ptoml.ProblemTOMLV2dot0Metadata{
-			ProblemTags:        []string{},
-			DifficultyFrom1To5: 0,
-			TaskAuthors:        []string{},
-			OriginOlympiad:     &olympiad,
-		},
-		Constraints: ptoml.ProblemTOMLV2dot0Constraints{
-			MemoryMegabytes: task.MemoryLimit,
-			CPUTimeSeconds:  task.TimeLimit,
-		},
-		TestGroups: []ptoml.ProblemTOMLV2dot1LIOTestGroup{},
+	problemToml := ptoml.ProblemTOMLV2dot2{
+		TaskName:    task.Title,
+		Metadata:    ptoml.ProblemTOMLV2dot0Metadata{ProblemTags: []string{}, DifficultyFrom1To5: 0, TaskAuthors: []string{}, OriginOlympiad: &olympiad},
+		Constraints: ptoml.ProblemTOMLV2dot0Constraints{MemoryMegabytes: task.MemoryLimit, CPUTimeSeconds: task.TimeLimit},
+		TestGroups:  []ptoml.ProblemTOMLV2dot1LIOTestGroup{},
+		VisInpSTs:   []int{1},
 	}
 
 	// Read all filenames in the tests directory
@@ -261,16 +253,14 @@ func main() {
 		}
 	}
 
-	f, err := os.OpenFile(filepath.Join(newDirPath, "problem.toml"), os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Fatalf("Failed to open problem.toml: %v\n", err)
-	}
-	defer f.Close()
-
-	err = toml.NewEncoder(f).SetTablesInline(false).SetArraysMultiline(true).SetIndentTables(true).Encode(problemToml)
+	output, err := problemToml.Marshall()
 	if err != nil {
 		log.Fatalf("Failed to marshal the problem.toml: %v\n", err)
 	}
 
+	err = os.WriteFile(filepath.Join(newDirPath, "problem.toml"), output, 0644)
+	if err != nil {
+		log.Fatalf("Failed to write problem.toml: %v\n", err)
+	}
 	log.Println("All done!")
 }
