@@ -6,13 +6,9 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"regexp"
-	"strconv"
-	"strings"
 
 	"github.com/programme-lv/import-lio-task-script/internal"
 )
-
 
 func main() {
 	// Define flags
@@ -41,170 +37,13 @@ func main() {
 	newDirName := baseName + "_proglv"
 	newDirPath := filepath.Join(*destDir, newDirName)
 
-	// Create the new directory
-	err := os.Mkdir(newDirPath, 0755)
+	task, err := internal.ParseLio2024TaskDir(*sourceDir)
 	if err != nil {
-		fmt.Printf("Failed to create directory %s: %v\n", newDirPath, err)
-		os.Exit(1)
+		log.Fatalf("Failed to parse Lio2024 task: %v\n", err)
 	}
 
-	fmt.Printf("New directory created at %s\n", newDirPath)
-
-	// Unzip tests.zip
-	zipPath := filepath.Join(*sourceDir, "testi", "tests.zip")
-	err = internal.Unzip(zipPath, filepath.Join(newDirPath, "tests"))
+	err = task.Store(newDirPath)
 	if err != nil {
-		log.Fatalf("Failed to unzip %s: %v\n", zipPath, err)
-	}
-
-	// Move PDF files
-	pdfSourceDir := filepath.Join(*sourceDir, "teksts")
-	pdfStatementDir := filepath.Join(newDirPath, "statements", "pdf")
-	pdfDestPath := filepath.Join(pdfStatementDir, "lv.pdf")
-	err = internal.CopyPDF(pdfSourceDir, pdfDestPath)
-	if err != nil {
-		log.Fatalf("Failed to move PDF files: %v\n", err)
-	}
-
-	// Read source task.yaml file
-	taskYAMLPath := filepath.Join(*sourceDir, "task.yaml")
-	task, err := internal.ReadTaskYAML(taskYAMLPath)
-	if err != nil {
-		log.Fatalf("Failed to read task.yaml: %v\n", err)
-	}
-
-	olympiad := "LIO"
-
-	// Read all filenames in the tests directory
-	mapGroupToTestFilenames := map[int][]string{}
-	testsDir := filepath.Join(newDirPath, "tests")
-	files, err := os.ReadDir(testsDir)
-	if err != nil {
-		log.Fatalf("Failed to read directory %s: %v\n", testsDir, err)
-	}
-	for _, file := range files {
-		if file.IsDir() {
-			log.Fatalf("Unexpected directory in the tests directory: %s\n", file.Name())
-		}
-		fname := file.Name()
-		// split into part by dot. keep the last part (the extension)
-		parts := strings.Split(fname, ".")
-		if len(parts) < 2 {
-			log.Fatalf("Unexpected filename: %s\n", fname)
-		}
-
-		ext := parts[len(parts)-1]
-
-		re := regexp.MustCompile("[0-9]+")
-		dGroups := re.FindAllString(ext, -1)
-		if len(dGroups) != 1 {
-			log.Fatalf("Unexpected filename: %s\n", fname)
-		}
-
-		group, err := strconv.Atoi(dGroups[0])
-		if err != nil {
-			log.Fatalf("Failed to convert %s to int: %v\n", dGroups[0], err)
-		}
-
-		// rename the file. if it has ".i" in the name, append "in" to the end
-		// if it has ".o" in the name, append "out" to the end
-		// remove ".i" and ".o" from the name
-
-		if strings.Contains(fname, ".i") {
-			newFname := strings.ReplaceAll(fname, ".i", "")
-			newFname += ".in"
-			err := os.Rename(filepath.Join(testsDir, fname), filepath.Join(testsDir, newFname))
-			if err != nil {
-				log.Fatalf("Failed to rename %s to %s: %v\n", fname, newFname, err)
-			}
-			fname = newFname
-		} else if strings.Contains(fname, ".o") {
-			newFname := strings.ReplaceAll(fname, ".o", "")
-			newFname += ".out"
-			err := os.Rename(filepath.Join(testsDir, fname), filepath.Join(testsDir, newFname))
-			if err != nil {
-				log.Fatalf("Failed to rename %s to %s: %v\n", fname, newFname, err)
-			}
-			fname = newFname
-		}
-
-		mapGroupToTestFilenames[group] = append(mapGroupToTestFilenames[group], fname)
-	}
-
-	for _, group := range task.TestsGroups {
-		groups := []int{}
-
-		switch v := group.Groups.(type) {
-		case int:
-			groups = append(groups, v)
-		case []interface{}:
-			integers := []int{}
-			for _, vv := range v {
-				switch vv := vv.(type) {
-				case int:
-					integers = append(integers, vv)
-				default:
-					log.Fatalf("Unsupported group: %+v %T\n", vv, vv)
-				}
-			}
-			if len(integers) == 1 {
-				groups = append(groups, integers...)
-			} else if len(v) == 2 {
-				for i := integers[0]; i <= integers[1]; i++ {
-					groups = append(groups, i)
-				}
-			} else {
-				log.Fatalf("Unsupported groups length: %v\n", v)
-			}
-		default:
-			log.Fatalf("Unsupported groups: %+v %T\n", v, v)
-		}
-
-		publicGroups := []int{}
-		switch v := group.Public.(type) {
-		case bool:
-			if v {
-				publicGroups = append(publicGroups, groups...)
-			}
-		case []interface{}:
-			integers := []int{}
-			for _, vv := range v {
-				switch vv := vv.(type) {
-				case int:
-					integers = append(integers, vv)
-				default:
-					log.Fatalf("Unsupported public group: %+v %T\n", vv, vv)
-				}
-			}
-
-			if len(integers) == 1 {
-				publicGroups = append(publicGroups, integers...)
-			} else if len(integers) == 2 {
-				for i := integers[0]; i <= integers[1]; i++ {
-					publicGroups = append(publicGroups, i)
-				}
-			} else {
-				log.Fatalf("Unsupported public groups: %v\n", v)
-			}
-		default:
-			log.Fatalf("Unsupported public groups: %v\n", v)
-		}
-
-		for _, g := range groups {
-			// move g 0 files to examples
-			if g == 0 {
-				for _, f := range mapGroupToTestFilenames[g] {
-					err := os.MkdirAll(filepath.Join(newDirPath, "examples"), 0755)
-					if err != nil {
-						log.Fatalf("Failed to create examples directory: %v\n", err)
-					}
-					err = os.Rename(filepath.Join(testsDir, f), filepath.Join(newDirPath, "examples", f))
-					if err != nil {
-						log.Fatalf("Failed to move %s to examples: %v\n", f, err)
-					}
-				}
-				continue
-			}
-		}
+		log.Fatalf("Failed to store task: %v\n", err)
 	}
 }

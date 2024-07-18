@@ -5,12 +5,6 @@ github.com/pelletier/go-toml/v2 v2.2.2 h1:aYUidT7k73Pcl9nb2gScu7NSrKCSHIDE89b3+6
 github.com/pelletier/go-toml/v2 v2.2.2/go.mod h1:1t835xjRzz80PqgE6HHgN2JOsmgYu/h4qDAS4n929Rs=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/programme-lv/fs-task-format-parser v0.0.0-20240718093625-0143f4bcee8a h1:CDXKwja9f+hzmuRq9pZJ5dKUXevgpd7YSrNs3Hf6naI=
-github.com/programme-lv/fs-task-format-parser v0.0.0-20240718093625-0143f4bcee8a/go.mod h1:PYSQfI1tbk2NefNr0ForZPAhj0vLc7TDgAVskbpgfnM=
-github.com/programme-lv/fs-task-format-parser v0.0.0-20240718104620-5c98850ed81f h1:ZT1o/ix/cgeCQH9kxeP4z6uC3WCcxxXWDytWvYLc8ls=
-github.com/programme-lv/fs-task-format-parser v0.0.0-20240718104620-5c98850ed81f/go.mod h1:PYSQfI1tbk2NefNr0ForZPAhj0vLc7TDgAVskbpgfnM=
-github.com/programme-lv/fs-task-format-parser v0.0.0-20240718130737-2cbe8145e743 h1:GIbtB8TB67Brc7OeBsu/0iGlLMOMPnB8xbhO9fKgojk=
-github.com/programme-lv/fs-task-format-parser v0.0.0-20240718130737-2cbe8145e743/go.mod h1:PYSQfI1tbk2NefNr0ForZPAhj0vLc7TDgAVskbpgfnM=
 github.com/programme-lv/fs-task-format-parser v0.0.0-20240718135944-b779c4a6ece0 h1:377S1d+ORnk/+MdFFxkHOwVqAwToW8TE1pgGaOndxIg=
 github.com/programme-lv/fs-task-format-parser v0.0.0-20240718135944-b779c4a6ece0/go.mod h1:PYSQfI1tbk2NefNr0ForZPAhj0vLc7TDgAVskbpgfnM=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=

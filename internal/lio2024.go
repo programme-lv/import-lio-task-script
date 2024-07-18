@@ -9,7 +9,7 @@ import (
 	"github.com/programme-lv/fs-task-format-parser/pkg/fstaskparser"
 )
 
-func ReadLio2024TaskDir(dirPath string) (*fstaskparser.Task, error) {
+func ParseLio2024TaskDir(dirPath string) (*fstaskparser.Task, error) {
 	taskYamlPath := filepath.Join(dirPath, "task.yaml")
 
 	taskYamlContent, err := os.ReadFile(taskYamlPath)
