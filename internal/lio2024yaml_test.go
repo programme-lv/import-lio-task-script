@@ -21,7 +21,6 @@ subtask_points: [0, 3, 48, 28, 21]
 
 tests_archive: './testi/tests.zip'
 checker: './riki/checker.cpp'
-interactor: './riki/interactor.cpp'
 
 tests_groups:
   - groups: 0
@@ -47,13 +46,13 @@ tests_groups:
 `
 
 	expected := internal.ParsedLio2024Yaml{
-		CpuTimeLimitInSeconds:   0.5,
-		MemoryLimitInMegabytes:  256,
-		FullTaskName:            "Kvadrātveida putekļsūcējs",
-		TestZipPathRelToYaml:    "./testi/tests.zip",
-		CheckerPathRelToYaml:    "./riki/checker.cpp",
-		InteractorPathRelToYaml: "./riki/interactor.cpp",
-		SubtaskPoints:           []int{0, 3, 48, 28, 21},
+		CpuTimeLimitInSeconds:  0.5,
+		MemoryLimitInMegabytes: 256,
+		FullTaskName:           "Kvadrātveida putekļsūcējs",
+		TestZipPathRelToYaml:   "./testi/tests.zip",
+		CheckerPathRelToYaml:   &([]string{"./riki/checker.cpp"}[0]),
+		// InteractorPathRelToYaml: &([]string{"./riki/interactor.cpp"}[0]),
+		SubtaskPoints: []int{0, 3, 48, 28, 21},
 		TestGroups: []internal.ParsedLio2024YamlTestGroup{
 			{
 				GroupID: 0,

@@ -11,8 +11,8 @@ type ParsedLio2024Yaml struct {
 	MemoryLimitInMegabytes  int
 	FullTaskName            string
 	TestZipPathRelToYaml    string
-	CheckerPathRelToYaml    string
-	InteractorPathRelToYaml string
+	CheckerPathRelToYaml    *string
+	InteractorPathRelToYaml *string
 	SubtaskPoints           []int
 	TestGroups              []ParsedLio2024YamlTestGroup
 }
@@ -31,8 +31,8 @@ type lio2024RawYaml struct {
 	ShortCode         string                    `yaml:"name"`
 	TaskName          string                    `yaml:"title"`
 	TestsZipRelPath   string                    `yaml:"tests_archive"`
-	CheckerRelPath    string                    `yaml:"checker"`
-	InteractorRelPath string                    `yaml:"interactor"`
+	CheckerRelPath    *string                   `yaml:"checker"`
+	InteractorRelPath *string                   `yaml:"interactor"`
 	SubtaskPoitns     []int                     `yaml:"subtask_points"`
 	TestGroups        []lio2024RawYamlTestGroup `yaml:"tests_groups"`
 }
