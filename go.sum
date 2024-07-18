@@ -7,6 +7,10 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/programme-lv/fs-task-format-parser v0.0.0-20240718135944-b779c4a6ece0 h1:377S1d+ORnk/+MdFFxkHOwVqAwToW8TE1pgGaOndxIg=
 github.com/programme-lv/fs-task-format-parser v0.0.0-20240718135944-b779c4a6ece0/go.mod h1:PYSQfI1tbk2NefNr0ForZPAhj0vLc7TDgAVskbpgfnM=
+github.com/programme-lv/fs-task-format-parser v0.0.0-20240718142753-c73c9ea4666b h1:M5zDAjZh4zQpyoti1ruf9HSSI1canA1V0j9thimxHGc=
+github.com/programme-lv/fs-task-format-parser v0.0.0-20240718142753-c73c9ea4666b/go.mod h1:PYSQfI1tbk2NefNr0ForZPAhj0vLc7TDgAVskbpgfnM=
+github.com/programme-lv/fs-task-format-parser v0.0.0-20240718143453-b35c9ca9216c h1:62HdZtHnmfZouBZJLU6moFUPani/ZX7e/9Ff8AkeEoU=
+github.com/programme-lv/fs-task-format-parser v0.0.0-20240718143453-b35c9ca9216c/go.mod h1:PYSQfI1tbk2NefNr0ForZPAhj0vLc7TDgAVskbpgfnM=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.4.0/go.mod h1:YvHI0jy2hoMjB+UWwv71VJQ9isScKT/TqJzVSSt89Yw=
 github.com/stretchr/objx v0.5.0/go.mod h1:Yh+to48EsGEfYuaHDzXPcE3xhTkx73EhmCGUpEOglKo=

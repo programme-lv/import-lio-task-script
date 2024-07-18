@@ -56,6 +56,10 @@ func ParseLio2024TaskDir(dirPath string) (*fstaskparser.Task, error) {
 	mapTestsToTestGroups := map[int][]int{}
 
 	for _, t := range tests {
+		if t.TestGroup == 0 {
+			task.AddExample(t.Input, t.Answer)
+			continue
+		}
 		id := task.AddTest(t.Input, t.Answer)
 		name := fmt.Sprintf("%03d_%d", t.TestGroup, t.NoInTestGroup)
 		task.AssignFilenameToTest(name, id)
@@ -63,6 +67,9 @@ func ParseLio2024TaskDir(dirPath string) (*fstaskparser.Task, error) {
 	}
 
 	for _, g := range parsedYaml.TestGroups {
+		if g.GroupID == 0 {
+			continue // examples
+		}
 		err := task.AddTestGroupWithID(g.GroupID, g.Points,
 			g.Public, mapTestsToTestGroups[g.GroupID],
 			g.Subtask)
@@ -105,6 +112,9 @@ func ParseLio2024TaskDir(dirPath string) (*fstaskparser.Task, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to add PDF statement: %w", err)
 	}
+
+	task.AddVisibleInputSubtask(1)
+	task.SetOriginOlympiad("LIO")
 
 	// TODO: implement adding checker and interactor if present
 

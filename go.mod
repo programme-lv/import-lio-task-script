@@ -3,7 +3,7 @@ module github.com/programme-lv/import-lio-task-script
 go 1.22.4
 
 require (
-	github.com/programme-lv/fs-task-format-parser v0.0.0-20240718135944-b779c4a6ece0
+	github.com/programme-lv/fs-task-format-parser v0.0.0-20240718143453-b35c9ca9216c
 	github.com/stretchr/testify v1.9.0
 	gopkg.in/yaml.v2 v2.4.0
 )
