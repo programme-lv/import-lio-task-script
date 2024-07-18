@@ -2,7 +2,7 @@
 set -ex
 
 # Define the directory and script name
-SCRIPT_NAME="import-lio-task-script"
+SCRIPT_NAME="import-lio-task"
 INSTALL_DIR="/usr/local/bin"
 
 # Ensure go.mod exists, or initialize the Go module

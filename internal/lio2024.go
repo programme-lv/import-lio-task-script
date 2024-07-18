@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -24,6 +25,7 @@ func ParseLio2024TaskDir(dirPath string) (*fstaskparser.Task, error) {
 
 	if parsedYaml.CheckerPathRelToYaml != nil {
 		// TODO: implement
+		log.Fatalf("found checker %s", *parsedYaml.CheckerPathRelToYaml)
 		return nil, fmt.Errorf("checkers are not implemented yet")
 	}
 
@@ -37,7 +39,7 @@ func ParseLio2024TaskDir(dirPath string) (*fstaskparser.Task, error) {
 		return nil, fmt.Errorf("failed to create new task: %v", err)
 	}
 
-	testZipAbsolutePath := filepath.Join(taskYamlPath, parsedYaml.TestZipPathRelToYaml)
+	testZipAbsolutePath := filepath.Join(dirPath, parsedYaml.TestZipPathRelToYaml)
 
 	tests, err := ReadLioTestsFromZip(testZipAbsolutePath)
 	if err != nil {
@@ -78,19 +80,30 @@ func ParseLio2024TaskDir(dirPath string) (*fstaskparser.Task, error) {
 	task.SetCPUTimeLimitInSeconds(parsedYaml.CpuTimeLimitInSeconds)
 	task.SetMemoryLimitInMegabytes(parsedYaml.MemoryLimitInMegabytes)
 
-	// TODO: implement adding pdf statement, checker and interactor if present
+	pdfFilePath := filepath.Join(dirPath, "teksts")
+	pdfFiles, err := filepath.Glob(filepath.Join(pdfFilePath, "*.pdf"))
+	if err != nil {
+		return nil, fmt.Errorf("failed to find PDF files: %w", err)
+	}
 
-	pdfName := fmt.Sprintf("%s.pdf", parsedYaml.TaskShortIDCode)
-	pdfStatementPath := filepath.Join(dirPath, "teksts", pdfName)
+	if len(pdfFiles) == 0 {
+		return nil, fmt.Errorf("no PDF files found in the directory %s", pdfFilePath)
+	}
+
+	if len(pdfFiles) > 1 {
+		return nil, fmt.Errorf("more than one PDF file found in the directory (%d)", len(pdfFiles))
+	}
+
+	pdfStatementPath := pdfFiles[0]
 
 	pdfBytes, err := os.ReadFile(pdfStatementPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read PDF statement: %v", err)
+		return nil, fmt.Errorf("failed to read PDF file: %w", err)
 	}
 
 	err = task.AddPDFStatement("lv", pdfBytes)
 	if err != nil {
-		return nil, fmt.Errorf("failed to add PDF statement: %v", err)
+		return nil, fmt.Errorf("failed to add PDF statement: %w", err)
 	}
 
 	// TODO: implement adding checker and interactor if present
