@@ -22,6 +22,16 @@ func ReadLio2024TaskDir(dirPath string) (*fstaskparser.Task, error) {
 		return nil, fmt.Errorf("failed to parse task.yaml: %v", err)
 	}
 
+	if parsedYaml.CheckerPathRelToYaml != nil {
+		// TODO: implement
+		return nil, fmt.Errorf("checkers are not implemented yet")
+	}
+
+	if parsedYaml.InteractorPathRelToYaml != nil {
+		// TODO: implement
+		return nil, fmt.Errorf("interactors are not implemented yet")
+	}
+
 	task, err := fstaskparser.NewTask(parsedYaml.FullTaskName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create new task: %v", err)
@@ -69,6 +79,21 @@ func ReadLio2024TaskDir(dirPath string) (*fstaskparser.Task, error) {
 	task.SetMemoryLimitInMegabytes(parsedYaml.MemoryLimitInMegabytes)
 
 	// TODO: implement adding pdf statement, checker and interactor if present
+
+	pdfName := fmt.Sprintf("%s.pdf", parsedYaml.TaskShortIDCode)
+	pdfStatementPath := filepath.Join(dirPath, "teksts", pdfName)
+
+	pdfBytes, err := os.ReadFile(pdfStatementPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read PDF statement: %v", err)
+	}
+
+	err = task.AddPDFStatement("lv", pdfBytes)
+	if err != nil {
+		return nil, fmt.Errorf("failed to add PDF statement: %v", err)
+	}
+
+	// TODO: implement adding checker and interactor if present
 
 	return task, nil
 }

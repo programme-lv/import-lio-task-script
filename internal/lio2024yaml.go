@@ -10,6 +10,7 @@ type ParsedLio2024Yaml struct {
 	CpuTimeLimitInSeconds   float64
 	MemoryLimitInMegabytes  int
 	FullTaskName            string
+	TaskShortIDCode         string
 	TestZipPathRelToYaml    string
 	CheckerPathRelToYaml    *string
 	InteractorPathRelToYaml *string
@@ -54,6 +55,7 @@ func ParseLio2024Yaml(content []byte) (res ParsedLio2024Yaml, err error) {
 	}
 
 	res.FullTaskName = rawYaml.TaskName
+	res.TaskShortIDCode = rawYaml.ShortCode
 	res.CpuTimeLimitInSeconds = rawYaml.TimeLimit
 	res.MemoryLimitInMegabytes = rawYaml.MemoryLimit
 	res.TestZipPathRelToYaml = rawYaml.TestsZipRelPath
