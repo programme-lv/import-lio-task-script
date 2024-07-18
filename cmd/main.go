@@ -11,9 +11,8 @@ import (
 	"strings"
 
 	"github.com/programme-lv/import-lio-task-script/internal"
-
-	"github.com/programme-lv/fs-task-problem-toml/pkg/ptoml"
 )
+
 
 func main() {
 	// Define flags
@@ -75,15 +74,6 @@ func main() {
 	}
 
 	olympiad := "LIO"
-
-	// Write problem.toml file
-	problemToml := ptoml.ProblemTOMLV2dot2{
-		TaskName:    task.Title,
-		Metadata:    ptoml.ProblemTOMLV2dot0Metadata{ProblemTags: []string{}, DifficultyFrom1To5: 0, TaskAuthors: []string{}, OriginOlympiad: &olympiad},
-		Constraints: ptoml.ProblemTOMLV2dot0Constraints{MemoryMegabytes: task.MemoryLimit, CPUTimeSeconds: task.TimeLimit},
-		TestGroups:  []ptoml.ProblemTOMLV2dot1LIOTestGroup{},
-		VisInpSTs:   []int{1},
-	}
 
 	// Read all filenames in the tests directory
 	mapGroupToTestFilenames := map[int][]string{}
@@ -215,52 +205,6 @@ func main() {
 				}
 				continue
 			}
-			// copy g 1 INPUT files to examples (outputs are hidden)
-			// if g == 1 {
-			// 	for _, f := range mapGroupToTestFilenames[g] {
-			// 		if strings.Contains(f, ".o") {
-			// 			continue
-			// 		}
-			// 		err := os.MkdirAll(filepath.Join(newDirPath, "examples"), 0755)
-			// 		if err != nil {
-			// 			log.Fatalf("Failed to create examples directory: %v\n", err)
-			// 		}
-			// 		content, err := os.ReadFile(filepath.Join(testsDir, f))
-			// 		if err != nil {
-			// 			log.Fatalf("Failed to read %s: %v\n", f, err)
-			// 		}
-			// 		err = os.WriteFile(filepath.Join(newDirPath, "examples", f), content, 0644)
-			// 		if err != nil {
-			// 			log.Fatalf("Failed to copy %s to examples: %v\n", f, err)
-			// 		}
-			// 	}
-			// }
-
-			isPublic := false
-			for _, pg := range publicGroups {
-				if g == pg {
-					isPublic = true
-					break
-				}
-			}
-			problemToml.TestGroups = append(problemToml.TestGroups, ptoml.ProblemTOMLV2dot1LIOTestGroup{
-				GroupID:    g,
-				Points:     group.Points,
-				Subtask:    group.Subtask,
-				Public:     isPublic,
-				TestFnames: mapGroupToTestFilenames[g],
-			})
 		}
 	}
-
-	output, err := problemToml.Marshall()
-	if err != nil {
-		log.Fatalf("Failed to marshal the problem.toml: %v\n", err)
-	}
-
-	err = os.WriteFile(filepath.Join(newDirPath, "problem.toml"), output, 0644)
-	if err != nil {
-		log.Fatalf("Failed to write problem.toml: %v\n", err)
-	}
-	log.Println("All done!")
 }
