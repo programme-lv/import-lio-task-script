@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/programme-lv/import-lio-task-script/internal"
+	"github.com/programme-lv/lio-task-importer/internal"
 )
 
 func main() {

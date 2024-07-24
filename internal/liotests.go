@@ -139,8 +139,8 @@ func ReadLioTestsFromDir(testDir string) ([]LioTest, error) {
 }
 
 /*
-kp.i00
-kp.i01a
+kp.i00 -> ["kp", "i", "00"]
+kp.i01a -> ["kp", "i", "01", "a"]
 kp.i01b
 kp.o00
 kp.o01a

@@ -61,7 +61,7 @@ func ParseLio2024TaskDir(dirPath string) (*fstaskparser.Task, error) {
 			continue
 		}
 		id := task.AddTest(t.Input, t.Answer)
-		name := fmt.Sprintf("%03d_%d", t.TestGroup, t.NoInTestGroup)
+		name := fmt.Sprintf("%03d_%s", t.TestGroup, string(t.NoInTestGroup+int('a')-1))
 		task.AssignFilenameToTest(name, id)
 		mapTestsToTestGroups[t.TestGroup] = append(mapTestsToTestGroups[t.TestGroup], id)
 	}

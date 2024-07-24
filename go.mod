@@ -1,4 +1,4 @@
-module github.com/programme-lv/import-lio-task-script
+module github.com/programme-lv/lio-task-importer
 
 go 1.22.4
 

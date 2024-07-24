@@ -3,7 +3,7 @@ package internal_test
 import (
 	"testing"
 
-	"github.com/programme-lv/import-lio-task-script/internal"
+	"github.com/programme-lv/lio-task-importer/internal"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
